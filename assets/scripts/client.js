@@ -53,7 +53,7 @@ function populateTable(table, data){
         const cell3 = row.insertCell(2);
         cell1.className = "col_1";
         cell2.className = "col_2";
-        cell1.innerHTML = rec.Quote;
+        cell1.innerHTML = `"${rec.Quote}"`;
         cell2.innerHTML = rec.Author;
     }
 }

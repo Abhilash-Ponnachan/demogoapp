@@ -1,5 +1,7 @@
 package main
 
+import "database/sql"
+
 // repository interface for quotes
 type quoteRepo interface {
 	listQuotes(limit uint, qtsBuff *[]quote)
@@ -43,3 +45,24 @@ func (qr quoteRepoDummy) listQuotes(limit uint, qtsBuff *[]quote) {
 		*qtsBuff = append(*qtsBuff, q)
 	}
 }
+
+// sqllite implementation for quote repo
+type quoteRepoSQL struct{}
+
+func (qr quoteRepoSQL) listQuotes(limit uint, qtsBuff *[]quote) {
+	sqlDb, err := sql.Open("sqlite3", config().DbConnection)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer sqlDb.Close()
+
+}
+
+/*
+ Install Sqlite driver for Go
+	$ go get github.com/mattn/go-sqlite3
+
+	>> download and install package in GOPATH(~/go)/pkg/mod/github.com/mattn/go-sqlite3@v1.14.8
+	   ... approximately 9MB !!, has 'C' binding
+	>> update mod.go file with 'require'
+*/

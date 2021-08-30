@@ -8,11 +8,6 @@ import (
 	"time"
 )
 
-// <TO DO> move to env vars
-const port = "8080"
-const defaultPage = "index.html"
-const assetsDir = "./assets"
-
 // custom FS handler to restrict dir access
 type restrictedFS struct {
 	fs http.FileSystem
@@ -29,7 +24,7 @@ func (rfs restrictedFS) Open(path string) (http.File, error) {
 	if s.IsDir() {
 		// if path is a directory
 		// check if an 'index (default)' page exists
-		indxFile := filepath.Join(path, defaultPage)
+		indxFile := filepath.Join(path, config().DefaultPage)
 		// try open file
 		if _, err := rfs.fs.Open(indxFile); err != nil {
 			// file exist close the file handle
@@ -53,7 +48,7 @@ func main() {
 	// handler to serve pages / static content
 	// use 'assets_dir' as the root of FS object for handler
 	// decorate default FS object to restric dir access
-	fs := http.FileServer(restrictedFS{http.Dir(assetsDir)})
+	fs := http.FileServer(restrictedFS{http.Dir(config().AssetsDir)})
 	muxHandler.Handle("/", fs)
 
 	// handler funcs for other path (namely APIs)
@@ -67,14 +62,14 @@ func main() {
 
 	// http server instance
 	server := http.Server{
-		Addr: fmt.Sprintf(":%s", port),
+		Addr: fmt.Sprintf(":%s", config().Port),
 		// our mux as handler for http requests
 		Handler:      muxHandler,
 		ReadTimeout:  time.Second * 3,
 		WriteTimeout: time.Second * 5,
 		IdleTimeout:  time.Second * 10,
 	}
-	log.Printf("Starting http server on PORT: %s\n", port)
+	log.Printf("Starting http server on PORT: %s\n", config().Port)
 	// start server and listen for req to serve
 	// this is a 'blocking' call
 	err := server.ListenAndServe()
