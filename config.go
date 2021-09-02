@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"sync"
 )
 
@@ -32,16 +31,12 @@ func config() *configData {
 
 func (cf *configData) load() {
 	bytes, err := ioutil.ReadFile(configFile)
-	if err != nil {
-		panic(err.Error())
-	}
+	checkerr(err)
 	err = json.Unmarshal(bytes, cf)
 	// <TO DO> chang unmarshall to map[string]string
 	// iterate and check each key is loaded to not empty
 	// assign to 'cf' fields
-	log.Printf("cf = %v\n", cf)
-	if err != nil {
-		panic(err.Error())
-	}
+	//log.Printf("cf = %v\n", cf)
+	checkerr(err)
 	// for 'Port' override with os.env value!!
 }

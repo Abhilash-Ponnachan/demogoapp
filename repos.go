@@ -1,14 +1,28 @@
 package main
 
-import "database/sql"
+import (
+	"database/sql"
+
+	_ "github.com/mattn/go-sqlite3"
+)
 
 // repository interface for quotes
 type quoteRepo interface {
+	init()
+	close()
 	listQuotes(limit uint, qtsBuff *[]quote)
 }
 
 // dummy implementation for quote repo
 type quoteRepoDummy struct{}
+
+func (qr quoteRepoDummy) init() {
+	// do nothing
+}
+
+func (qr quoteRepoDummy) close() {
+	// do nothing
+}
 
 func (qr quoteRepoDummy) listQuotes(limit uint, qtsBuff *[]quote) {
 	if qtsBuff != nil {
@@ -47,15 +61,49 @@ func (qr quoteRepoDummy) listQuotes(limit uint, qtsBuff *[]quote) {
 }
 
 // sqllite implementation for quote repo
-type quoteRepoSQL struct{}
+type quoteRepoSQL struct {
+	db *sql.DB
+}
+
+func (qr quoteRepoSQL) init() {
+	db, err := sql.Open("sqlite3", config().DbConnection)
+	checkerr(err)
+	qr.db = db
+	qr.prepareDB()
+}
+
+func (qr quoteRepoSQL) close() {
+	if qr.db != nil {
+		qr.db.Close()
+	}
+}
+
+func (qr quoteRepoSQL) prepareDB() {
+	cmd := `CREATE TABLE IF NOT EXISTS "quotes" (
+		"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+		"text"	TEXT,
+		"author"	TEXT
+	);`
+	stmt, err := qr.db.Prepare(cmd)
+	checkerr(err)
+	_, err = stmt.Exec()
+	checkerr(err)
+}
 
 func (qr quoteRepoSQL) listQuotes(limit uint, qtsBuff *[]quote) {
-	sqlDb, err := sql.Open("sqlite3", config().DbConnection)
-	if err != nil {
-		panic(err.Error())
+	if qtsBuff != nil {
+		var q quote
+		q = quote{
+			Author: "John Lennon",
+			Quote:  "Life is what happens when you’re busy making other plans.",
+		}
+		*qtsBuff = append(*qtsBuff, q)
+		q = quote{
+			Author: "Albert Einstein",
+			Quote:  "If you want to live a happy life, tie it to a goal, not to people or things.",
+		}
+		*qtsBuff = append(*qtsBuff, q)
 	}
-	defer sqlDb.Close()
-
 }
 
 /*

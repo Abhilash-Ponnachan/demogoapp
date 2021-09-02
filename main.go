@@ -52,7 +52,9 @@ func main() {
 	muxHandler.Handle("/", fs)
 
 	// handler funcs for other path (namely APIs)
-	rh := reqHandler{}
+	rh := reqHandler{repo: quoteRepoSQL{}}
+	rh.init()
+	defer rh.finalize()
 	// dummy api for testing
 	muxHandler.HandleFunc("/api/hello", rh.hello)
 	// dummy api for testing

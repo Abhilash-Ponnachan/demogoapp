@@ -10,7 +10,17 @@ import (
 const defQtsLimit uint = 15
 
 // handler funcs for diff req
-type reqHandler struct{}
+type reqHandler struct {
+	repo quoteRepo
+}
+
+func (rh reqHandler) init() {
+	rh.repo.init()
+}
+
+func (rh reqHandler) finalize() {
+	rh.repo.close()
+}
 
 // handler func for /hello[?name=xxx]
 func (rh reqHandler) hello(w http.ResponseWriter, r *http.Request) {
@@ -45,8 +55,7 @@ func (rh reqHandler) datetime(w http.ResponseWriter, r *http.Request) {
 func (rh reqHandler) listquotes(w http.ResponseWriter, r *http.Request) {
 	qts := []quote{}
 	// populate quotes from repository
-	repo := quoteRepoDummy{}
-	repo.listQuotes(defQtsLimit, &qts)
+	rh.repo.listQuotes(defQtsLimit, &qts)
 	js, err := json.Marshal(qts)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

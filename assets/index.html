@@ -7,7 +7,10 @@
     </head>
     <body>
         <div id="container">
-            <div id="header">Famous Quotes</div>
+            <div id="header">
+                <div id="header-text">Famous Quotes</div>
+                <button id="btn-add-quote">Add New</button>
+            </div>
             <div id="body">
                 <table id="quotes">
                     <colgroup>
@@ -18,11 +21,31 @@
                     <tr>
                       <th>Quote</th>
                       <th>Author</th>
-                      <th>(+ x -)</th>
+                      <th>Edit</th>
                     </tr>                   
                   </table>
             </div>
-            <div id="footer">*************************</div>
+            <div id="edit-modal">
+                <label class="edit-label">Author</label>
+                <div>
+                    <input class="col_2" id="edit-value-author">
+                </div>
+                <div></div>
+                <label class="edit-label">Quote</label>
+                <div id="edit-value-quote-cont">
+                    <textarea class="col_1" id="edit-value-quote" 
+                    cols="1" rows="1"></textarea>
+                </div>
+                <div>
+                    <button class="edit-btn" style="color: green" id="btn-save">
+                        Save &checkmark;
+                    </button>
+                    <button class="edit-btn" style="color: red" id="btn-cancel">
+                        Cancel &times;
+                    </button>
+                </div>
+            </div>
+            <div id="footer">&approx;&approx;&approx;&approx;&approx;</div>
         </div>
     </body>
 </html>
