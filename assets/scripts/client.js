@@ -3,6 +3,8 @@ const HOST = location.protocol + "//" + window.location.hostname
 + (window.location.port ? ":" + window.location.port : "");
 
 const API_LIST_QUOTES = HOST + "/api/listquotes";
+const API_ADD_QUOTE = HOST + "/api/addquote";
+const STATE = new State();
 
 function isEmptyObj(obj){
     return (obj == null) || (Object.keys(obj).length === 0 && obj.constructor === Object)
@@ -17,7 +19,22 @@ async function getJSONData(url = '', qryParams = {}) {
         urlObj.search = new URLSearchParams(qryParams).toString();
     }
     const response = await fetch(urlObj)
+        .catch(err => console.log(err));
     return await response.json()
+}
+
+async function postJSONData(url = '', data = {}) {
+    if (!url) {
+        throw new Error("URl cannot be empty!!")
+    }
+
+    const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {"Content-type": "application/json; charset=UTF-8"}
+      })
+      .catch(err => console.log(err));
+    return response;
 }
 
 function loadQuotes(){
@@ -58,7 +75,32 @@ function populateTable(table, data){
     }
 }
 
+function saveData(){
+    switch (STATE.getState()){
+        case ST_VAL_ADD: 
+            const [txtAuthor, divQuote] = getEditValues();
+            data = {
+                Id: 0,  // dummy Id for new record
+                Author: txtAuthor.value,
+                Quote: divQuote.innerText
+            };
+            postJSONData(API_ADD_QUOTE, data)
+            .then(response => {
+                console.log(response);
+            });
+            break;
+    }
+
+}
+
+function getEditValues(){
+    const txtAuthor = document.getElementById('edit-value-author');
+    const divQuote = document.getElementById('edit-value-quote');
+    return [txtAuthor, divQuote];
+}
+
 // things to do on load
 window.onload = () => {
     loadQuotes();
+    initUI(saveData);
 }

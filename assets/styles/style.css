@@ -40,7 +40,7 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transition: 200ms ease-in-out;
     border: 3px solid rgba(165, 42, 42, 0.746);
     box-shadow: 2px 2px 2px 2px darkgoldenrod;
     border-radius: 10px;
@@ -53,20 +53,42 @@
     display: grid;
     padding: 10px;
     grid-template-columns: 10% 75% 15%;
-    grid-row-gap: 20px;
+    grid-row-gap: 10px;
+    grid-template-rows: max-content;
+  }
+
+  .modal-inactive{
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  .modal-active{
+    transform: translate(-50%, -50%) scale(1);
   }
 
   #edit-value-quote-cont{
-    height: 100%;
-    max-height: 30%;
+    height: 90%;
+    max-height: 90%;
+    min-height: 90%;
+    width: 90%;
+    max-width: 90%;
+    min-width: 90%;
   }
 
   #edit-value-quote{
-    width: 90%;
-    height: 100%;
-    max-width: 95%;
-    max-height: 70%;
-    text-align: left;
+    width: 99%;
+    height: 99%;
+    min-height: 99%;
+    max-height: 99%;
+    min-width: 99%;
+    max-width: 99%;
+    border: 1px solid grey;
+    background-color:whitesmoke;
+    font-size: medium;
+    font-style: italic;
+    color: rgb(82, 4, 4);
+    font-family:  Baskerville,'Hoefler Text',Garamond,'Times New Roman',serif;
+    resize: both;
+    overflow: scroll;
   }
 
   .edit-label{

@@ -52,7 +52,7 @@ func main() {
 	muxHandler.Handle("/", fs)
 
 	// handler funcs for other path (namely APIs)
-	rh := reqHandler{repo: quoteRepoSQL{}}
+	rh := reqHandler{repo: &quoteRepoSQL{}}
 	rh.init()
 	defer rh.finalize()
 	// dummy api for testing
@@ -61,6 +61,8 @@ func main() {
 	muxHandler.HandleFunc("/api/datetime", rh.datetime)
 	// GET api for listing the quotes
 	muxHandler.HandleFunc("/api/listquotes", rh.listquotes)
+	// POST api for adding a quote
+	muxHandler.HandleFunc("/api/addquote", rh.addquote)
 
 	// http server instance
 	server := http.Server{

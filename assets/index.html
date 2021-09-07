@@ -2,6 +2,8 @@
 <html>
     <head>
         <title>Famous Quotes</title>
+        <script src="scripts/domain.js"></script>
+        <script src="scripts/ui.js"></script>
         <script src="scripts/client.js"></script>
         <link rel="stylesheet" href="styles/style.css">
     </head>
@@ -25,7 +27,7 @@
                     </tr>                   
                   </table>
             </div>
-            <div id="edit-modal">
+            <div class="modal-inactive" id="edit-modal">
                 <label class="edit-label">Author</label>
                 <div>
                     <input class="col_2" id="edit-value-author">
@@ -33,14 +35,13 @@
                 <div></div>
                 <label class="edit-label">Quote</label>
                 <div id="edit-value-quote-cont">
-                    <textarea class="col_1" id="edit-value-quote" 
-                    cols="1" rows="1"></textarea>
+                    <div id="edit-value-quote" contenteditable="true"></div>
                 </div>
                 <div>
-                    <button class="edit-btn" style="color: green" id="btn-save">
+                    <button class="edit-btn" style="color: green" id="btn-edit-save">
                         Save &checkmark;
                     </button>
-                    <button class="edit-btn" style="color: red" id="btn-cancel">
+                    <button class="edit-btn" style="color: red" id="btn-edit-cancel">
                         Cancel &times;
                     </button>
                 </div>
