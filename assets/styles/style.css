@@ -107,6 +107,19 @@
     border-radius: 10px;
   }
 
+  .btn-edit{
+    margin: 0 5% 0 5%;
+    resize: both;
+    font-weight: bold;
+    color: rgb(66, 66, 233);
+  }
+
+  .btn-delete{
+    margin: 0 5% 0 5%;
+    resize: both;
+    font-weight: bold;
+    color: rgb(226, 68, 68);
+  }
 
   #edit-value-author {
     width: 30%;
@@ -127,7 +140,9 @@
     border: 1px solid #ddd;
     padding: 8px;
   }
-  
+  .col_0 {
+    display: none;
+  }
   .col_1 {
     width: 70%;
     font-size: medium;

@@ -12,6 +12,7 @@ type quoteRepo interface {
 	close()
 	listQuotes(limit uint, qtsBuff *[]quote)
 	addQuote(qtObj *quote) uint
+	deleteQuote(rowId uint) uint
 }
 
 // sqllite implementation for quote repo
@@ -62,7 +63,7 @@ func (qr *quoteRepoSQL) listQuotes(limit uint, qtsBuff *[]quote) {
 	}
 }
 
-func (qr quoteRepoSQL) addQuote(qtObj *quote) uint {
+func (qr *quoteRepoSQL) addQuote(qtObj *quote) uint {
 	var lastId int64 = 0
 	if qtObj != nil {
 		//log.Printf("Quote Obj = %v\n", qtObj)
@@ -75,6 +76,18 @@ func (qr quoteRepoSQL) addQuote(qtObj *quote) uint {
 		checkerr(err)
 	}
 	return uint(lastId)
+}
+
+func (qr *quoteRepoSQL) deleteQuote(rowId uint) uint {
+	var rowsDeleted int64 = 0
+	cmd := `DELETE FROM quotes WHERE id = ?;`
+	stmt, err := qr.db.Prepare(cmd)
+	checkerr(err)
+	rslt, err := stmt.Exec(rowId)
+	checkerr(err)
+	rowsDeleted, err = rslt.RowsAffected()
+	checkerr(err)
+	return uint(rowsDeleted)
 }
 
 /*

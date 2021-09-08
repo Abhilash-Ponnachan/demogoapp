@@ -67,9 +67,13 @@ func (rh reqHandler) listquotes(w http.ResponseWriter, r *http.Request) {
 
 // add quote to 'repository'
 func (rh reqHandler) addquote(w http.ResponseWriter, r *http.Request) {
+	// handle only POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	// placeholder quote obj
 	var qt quote
-
 	// Try to decode the request body into the struct. If there is an error,
 	// respond to the client with the error message and a 400 status code.
 	err := json.NewDecoder(r.Body).Decode(&qt)
@@ -94,4 +98,45 @@ func (rh reqHandler) addquote(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
 	// if success, return last inserted Id
+}
+
+// delete quote from 'repository'
+func (rh reqHandler) deleteqoute(w http.ResponseWriter, r *http.Request) {
+	// handle only POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	// dummy obj for req data
+	rd := struct {
+		RowId int
+	}{
+		-1,
+	}
+
+	// Try to decode the request body into the struct. If there is an error,
+	// respond to the client with the error message and a 400 status code.
+	err := json.NewDecoder(r.Body).Decode(&rd)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	//log.Printf("ReqObj: %+v", rd)
+	if rd.RowId > -1 {
+		rowsDel := rh.repo.deleteQuote(uint(rd.RowId))
+		rsp := struct {
+			RowsDeleted uint
+		}{
+			rowsDel,
+		}
+		js, err := json.Marshal(rsp)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+		// if success, return rows deleted
+	}
+
 }
