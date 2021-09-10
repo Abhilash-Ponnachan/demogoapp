@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -101,7 +102,7 @@ func (rh reqHandler) addquote(w http.ResponseWriter, r *http.Request) {
 }
 
 // delete quote from 'repository'
-func (rh reqHandler) deleteqoute(w http.ResponseWriter, r *http.Request) {
+func (rh reqHandler) deletequote(w http.ResponseWriter, r *http.Request) {
 	// handle only POST
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -138,5 +139,40 @@ func (rh reqHandler) deleteqoute(w http.ResponseWriter, r *http.Request) {
 		w.Write(js)
 		// if success, return rows deleted
 	}
+
+}
+
+// update quote data in 'repository'
+func (rh reqHandler) updatequote(w http.ResponseWriter, r *http.Request) {
+	// handle only POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	// placeholder quote obj
+	var qt quote
+	// Try to decode the request body into the struct. If there is an error,
+	// respond to the client with the error message and a 400 status code.
+	err := json.NewDecoder(r.Body).Decode(&qt)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Printf("Err =%v\n", err)
+		return
+	}
+
+	rowsUpd := rh.repo.updateQuote(&qt)
+	rsp := struct {
+		RowsUpdated uint
+	}{
+		rowsUpd,
+	}
+	js, err := json.Marshal(rsp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+	// if success, return rows updated
 
 }

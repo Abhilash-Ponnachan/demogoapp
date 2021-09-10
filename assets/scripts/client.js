@@ -4,7 +4,8 @@ const HOST = location.protocol + "//" + window.location.hostname
 
 const API_LIST_QUOTES = HOST + "/api/listquotes";
 const API_ADD_QUOTE = HOST + "/api/addquote";
-const API_DELETE_QUOTE = HOST + "/api/deleteqoute";
+const API_DELETE_QUOTE = HOST + "/api/deletequote";
+const API_UPDATE_QUOTE = HOST + "/api/updatequote";
 const STATE = new State();
 
 function isEmptyObj(obj){
@@ -87,7 +88,10 @@ function addRow(table, rowCount, dataRec){
     btnEdt.type = "button";
     btnEdt.className = "btn-edit";
     btnEdt.value = "Edit (-)";
-    //btn.onclick = (function(entry) {return function() {chooseUser(entry);}})(entry);
+    btnEdt.onclick = editRec;
+    // custom data attribute for rec id
+    btnEdt.dataRecId = dataRec.Id;
+    
     const btnDel = document.createElement('input');
     btnDel.type = "button";
     btnDel.className = "btn-delete";
@@ -95,14 +99,29 @@ function addRow(table, rowCount, dataRec){
     btnDel.onclick = deleteRec;
     // custom data attribute for rec id
     btnDel.dataRecId = dataRec.Id;
-    // custom data attribute for row index
-    btnDel.dataRowIndex = rowCount;
     
     cell3.appendChild(btnEdt);
     cell3.appendChild(btnDel);
 }
 
+function editRec(event){
+    const trgt = event?.target;
+    const typ = trgt?.type;
+    if (typ && typ === "button"){
+        // get rowId from custom attribute
+        const rowId = trgt.dataRecId;
+        if (rowId != null){
+            const [author, quoute] = getRowValues(trgt); 
+            loadRecord(rowId, author, quoute);
+            const divModal = document.getElementById('edit-modal');
+            openModal(divModal);
+            STATE.setState(ST_VAL_UPD);
+        }
+    }
+}
+
 function removeRow(table, rowIndex){
+    console.log(`Removing row @ index = ${rowIndex}`);
     table.deleteRow(rowIndex);
 }
 
@@ -130,42 +149,93 @@ function deleteRec(event){
     }
 }
 
+function addRecAPI(){
+    const [_, txtAuthor, divQuote] = getEditValues();
+    const data = {
+        Id: 0,  // dummy Id for new record
+        Author: txtAuthor.value,
+        Quote: divQuote.innerText
+    };
+    postJSONData(API_ADD_QUOTE, data)
+    .then(resp => {
+        if (resp.ok){
+            const contType = resp.headers.get("content-type");
+            if (contType 
+                && contType.indexOf("application/json") !== -1){
+                    resp.json()
+                        .then(respData => {
+                            //console.log(respData);
+                            const table = getQuoteTable();
+                            const rc = table.rows.length;
+                            data.Id = respData.LastRowId;
+                            addRow(table, rc, data);
+                        })
+                }
+        }
+    });
+}
+
+function updateRecAPI(){
+    const [txtRecId, txtAuthor, divQuote] = getEditValues();
+    const data = {
+        Id: parseInt(txtRecId.value),
+        Author: txtAuthor.value,
+        Quote: divQuote.innerText
+    };
+    //console.log(data);
+    postJSONData(API_UPDATE_QUOTE, data)
+    .then(resp => {
+        if (resp.ok){
+            const contType = resp.headers.get("content-type");
+            if (contType 
+                && contType.indexOf("application/json") !== -1){
+                    resp.json()
+                        .then(respData => {
+                            //console.log(respData);
+                            const table = getQuoteTable();
+                            // TO DO : update row with saved data
+                            // if rows affected in 
+                            //setRow(table, rowIndex, data);
+                        })
+                }
+        }
+    });
+}
+
 function saveData(){
     switch (STATE.getState()){
         case ST_VAL_ADD: 
-            const [txtAuthor, divQuote] = getEditValues();
-            const data = {
-                Id: 0,  // dummy Id for new record
-                Author: txtAuthor.value,
-                Quote: divQuote.innerText
-            };
-            postJSONData(API_ADD_QUOTE, data)
-            .then(resp => {
-                if (resp.ok){
-                    const contType = resp.headers.get("content-type");
-                    if (contType 
-                        && contType.indexOf("application/json") !== -1){
-                            resp.json()
-                                .then(respData => {
-                                    //console.log(respData);
-                                    const table = getQuoteTable();
-                                    const rc = table.rows.length;
-                                    data.Id = respData.LastRowId;
-                                    addRow(table, rc, data);
-                                })
-                        }
-                }
-            });
+            addRecAPI();
+            break;
+        case ST_VAL_UPD:
+            updateRecAPI();
             break;
     }
 
 }
 
 function getEditValues(){
+    const txtId = document.getElementById('edit-rec-id');
     const txtAuthor = document.getElementById('edit-value-author');
     const divQuote = document.getElementById('edit-value-quote');
-    return [txtAuthor, divQuote];
+    return [txtId, txtAuthor, divQuote];
 }
+
+function getRowValues(btn){
+    let author, quote;
+    if ((btn.parentNode?.nodeName == 'TD')
+       && (btn.parentNode.parentNode?.nodeName == 'TR')){
+           row = btn.parentNode.parentNode;
+           if (row.childNodes?.length > 2){
+               const col01 = row.childNodes[1];
+               const col02 = row.childNodes[2]
+               author = col02.innerText;
+               quote = col01.innerText;
+           }
+    }
+    return [author, quote];
+}
+
 
 function getQuoteTable(){
     const table = document.getElementById("quotes");
@@ -173,8 +243,13 @@ function getQuoteTable(){
 }
 
 function getRowIndex(btn){
-    const rowIndex = btn?.dataRowIndex;
-    return rowIndex;
+    let index;
+    if ((btn?.type == 'button')
+       && (btn.parentNode?.nodeName == 'TD')
+       && (btn.parentNode.parentNode?.nodeName == 'TR')){
+           index = btn.parentNode.parentNode.rowIndex;
+    }
+    return index;
 }
 
 // things to do on load

@@ -64,7 +64,9 @@ func main() {
 	// POST api for adding a quote
 	muxHandler.HandleFunc("/api/addquote", rh.addquote)
 	// POST api for adding a quote
-	muxHandler.HandleFunc("/api/deleteqoute", rh.deleteqoute)
+	muxHandler.HandleFunc("/api/deletequote", rh.deletequote)
+	// POST api for updating a quote
+	muxHandler.HandleFunc("/api/updatequote", rh.updatequote)
 
 	// http server instance
 	server := http.Server{
