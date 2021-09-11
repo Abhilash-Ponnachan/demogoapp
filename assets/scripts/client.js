@@ -104,6 +104,16 @@ function addRow(table, rowCount, dataRec){
     cell3.appendChild(btnDel);
 }
 
+function setRow(table, rowIndex, data){
+    if (table?.rows && table.rows.length > rowIndex){
+        const row = table.rows[rowIndex];
+        const colQuote = row.childNodes[1];
+        const colAuthor = row.childNodes[2];
+        colQuote.innerText = data.Quote;
+        colAuthor.innerText = data.Author;
+    }
+}
+
 function editRec(event){
     const trgt = event?.target;
     const typ = trgt?.type;
@@ -111,11 +121,12 @@ function editRec(event){
         // get rowId from custom attribute
         const rowId = trgt.dataRecId;
         if (rowId != null){
-            const [author, quoute] = getRowValues(trgt); 
-            loadRecord(rowId, author, quoute);
+            const [author, quoute] = getRowValues(trgt);
+            const rowIndex = getRowIndex(trgt)
+            loadRecord(rowId, rowIndex, author, quoute);
             const divModal = document.getElementById('edit-modal');
-            openModal(divModal);
             STATE.setState(ST_VAL_UPD);
+            openModal(divModal);
         }
     }
 }
@@ -150,7 +161,8 @@ function deleteRec(event){
 }
 
 function addRecAPI(){
-    const [_, txtAuthor, divQuote] = getEditValues();
+    // ignore id & index when destructuring
+    const [, , txtAuthor, divQuote] = getEditValues();
     const data = {
         Id: 0,  // dummy Id for new record
         Author: txtAuthor.value,
@@ -176,7 +188,7 @@ function addRecAPI(){
 }
 
 function updateRecAPI(){
-    const [txtRecId, txtAuthor, divQuote] = getEditValues();
+    const [txtRecId, txtRowIndex, txtAuthor, divQuote] = getEditValues();
     const data = {
         Id: parseInt(txtRecId.value),
         Author: txtAuthor.value,
@@ -194,8 +206,9 @@ function updateRecAPI(){
                             //console.log(respData);
                             const table = getQuoteTable();
                             // TO DO : update row with saved data
-                            // if rows affected in 
-                            //setRow(table, rowIndex, data);
+                            // if rows affected in
+                            const rowIndex = parseInt(txtRowIndex.value);
+                            setRow(table, rowIndex, data);
                         })
                 }
         }
@@ -216,9 +229,10 @@ function saveData(){
 
 function getEditValues(){
     const txtId = document.getElementById('edit-rec-id');
+    const txtRowIndex = document.getElementById('edit-row-index');
     const txtAuthor = document.getElementById('edit-value-author');
     const divQuote = document.getElementById('edit-value-quote');
-    return [txtId, txtAuthor, divQuote];
+    return [txtId, txtRowIndex, txtAuthor, divQuote];
 }
 
 function getRowValues(btn){
@@ -235,7 +249,6 @@ function getRowValues(btn){
     }
     return [author, quote];
 }
-
 
 function getQuoteTable(){
     const table = document.getElementById("quotes");

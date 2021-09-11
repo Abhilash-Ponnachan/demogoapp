@@ -4,8 +4,23 @@ const clsModalInActive = 'modal-inactive';
 
 // function to show and hide the modal element
 function openModal(modal){
+    setSaveBtnState();
     modal.classList.remove(clsModalInActive);
     modal.classList.add(clsModalActive);
+}
+
+function setSaveBtnState(){
+    const saveBtn = document.getElementById('btn-edit-save');
+    if (saveBtn != null){
+        switch(STATE.getState()){
+            case ST_VAL_ADD: 
+                saveBtn.innerText = "Add \u2713";
+                break;
+            case ST_VAL_UPD:
+                saveBtn.innerText = "Update \u2713";
+                break;
+        }
+    }
 }
 
 function closeModal(modal){
@@ -24,12 +39,16 @@ function resetControls(){
     }
 }
 
-function loadRecord(recId, author, quote){
+function loadRecord(recId, rowIndex, author, quote){
     const txtRecId = document.getElementById('edit-rec-id');
+    const txtRowIndex = document.getElementById('edit-row-index');
     const txtAuthor = document.getElementById('edit-value-author');
     const divQuote = document.getElementById('edit-value-quote');
     if (recId != null){
         txtRecId.value = recId;
+    }
+    if (rowIndex != null){
+        txtRowIndex.value = rowIndex;
     }
     if (author != null){
         txtAuthor.value = author;
@@ -49,8 +68,8 @@ function initUI(saveAction){
 
     // wire up the event handlers
     btnAddNew.addEventListener('click', ()=> {
-        openModal(divModal);
         STATE.setState(ST_VAL_ADD);
+        openModal(divModal);
         resetControls();
     });
     btnEditCancel.addEventListener('click', ()=> {
