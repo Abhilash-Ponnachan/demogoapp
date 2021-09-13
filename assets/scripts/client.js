@@ -81,7 +81,7 @@ function addRow(table, rowCount, dataRec){
     cell2.className = "col_2";
     cell3.className = "col_3";
     cell0.innerHTML = dataRec.Id;
-    cell1.innerHTML = `"${dataRec.Quote}"`;
+    cell1.innerHTML = `<q>${dataRec.Quote}</q>`;
     cell2.innerHTML = dataRec.Author;
     // add edit & delete buttons in the last cell
     const btnEdt = document.createElement('input');
@@ -109,7 +109,7 @@ function setRow(table, rowIndex, data){
         const row = table.rows[rowIndex];
         const colQuote = row.childNodes[1];
         const colAuthor = row.childNodes[2];
-        colQuote.innerText = data.Quote;
+        colQuote.innerHTML = `<q>${data.Quote}</q>`;
         colAuthor.innerText = data.Author;
     }
 }
@@ -133,7 +133,15 @@ function editRec(event){
 
 function removeRow(table, rowIndex){
     console.log(`Removing row @ index = ${rowIndex}`);
-    table.deleteRow(rowIndex);
+    if (table?.rows && table.rows.length > rowIndex){
+        const row = table.rows[rowIndex];
+        row.classList.add('delete_row_effect');
+        setTimeout(() => {
+            row.classList.remove('delete_row_effect');
+            table.deleteRow(rowIndex);
+        },
+        300);
+    }
 }
 
 function deleteRec(event){

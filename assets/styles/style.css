@@ -36,6 +36,18 @@
     text-shadow: 2px 2px 2px brown;
   }
 
+  #btn-inspire {
+    align-self: center;
+    font-style: italic;
+    height: 3vw;
+    font-size: 1vw;
+    background: rgb(223, 152, 120);
+    color:white;
+    border-radius: 10px;
+    text-shadow: 2px 2px 2px brown;
+    margin: 0 2% 0 0;
+  }
+
   .edit-data-element{
     display: none;
   }
@@ -86,6 +98,7 @@
     min-width: 99%;
     max-width: 99%;
     border: 1px solid grey;
+    padding: 5px;
     background-color:whitesmoke;
     font-size: medium;
     font-style: italic;
@@ -156,13 +169,17 @@
     font-family:  Baskerville,'Hoefler Text',Garamond,'Times New Roman',serif;
   }
   .col_2 {
-    width: 20%;
+    width: 18%;
     font-style: normal;
     font-size: small;
     font-weight: bold;
   }
   .col_3 {
-    width: 10%;
+    width: 12%;
+  }
+
+  .delete_row_effect{
+    background-color: rgb(246, 124, 124) !important;
   }
 
   #quotes tr:nth-child(even){background-color: #f2f2f2;}
