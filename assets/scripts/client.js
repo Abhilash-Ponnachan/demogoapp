@@ -6,6 +6,7 @@ const API_LIST_QUOTES = HOST + "/api/listquotes";
 const API_ADD_QUOTE = HOST + "/api/addquote";
 const API_DELETE_QUOTE = HOST + "/api/deletequote";
 const API_UPDATE_QUOTE = HOST + "/api/updatequote";
+const API_RANDOM_QUOTE = HOST + "/api/randomquote";
 const STATE = new State();
 
 function isEmptyObj(obj){
@@ -163,6 +164,8 @@ function deleteRec(event){
                     // to remove row from table 
                     removeRow(table, getRowIndex(trgt));
                 }
+            }).catch(err => {
+                console.log(err);
             });
         }
     }
@@ -235,6 +238,30 @@ function saveData(){
 
 }
 
+function randomQuote(){
+    const quote = getJSONData(API_RANDOM_QUOTE, null);
+    quote.then(respData => {
+        if (respData.error){
+            console.log(respData.msg)
+        } else {
+            // show modal window with random quote
+           //console.log(respData);
+           const id = respData.Id;
+           let author = respData.Author;
+           let quote = respData.Quote;
+           if (!quote){
+               quote = "<Works better, if you add some quotes!>";
+               author = "<The App>";
+           }
+           
+           loadRecord(id, null, author, quote);
+           //console.log(id, author, quote);
+        }
+    }).catch(err => {
+            console.log(err);
+    });
+}
+
 function getEditValues(){
     const txtId = document.getElementById('edit-rec-id');
     const txtRowIndex = document.getElementById('edit-row-index');
@@ -276,5 +303,5 @@ function getRowIndex(btn){
 // things to do on load
 window.onload = () => {
     loadQuotes();
-    initUI(saveData);
+    initUI(saveData, randomQuote);
 }

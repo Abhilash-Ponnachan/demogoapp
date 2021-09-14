@@ -14,6 +14,7 @@ type quoteRepo interface {
 	addQuote(qtObj *quote) uint
 	deleteQuote(rowId uint) uint
 	updateQuote(qtObj *quote) uint
+	randomQuote(qtObj *quote) uint
 }
 
 // sqllite implementation for quote repo
@@ -104,6 +105,25 @@ func (qr *quoteRepoSQL) updateQuote(qtObj *quote) uint {
 		checkerr(err)
 	}
 	return uint(rowsAffected)
+}
+
+func (qr *quoteRepoSQL) randomQuote(qtObj *quote) uint {
+	if qtObj != nil {
+		cmd := `SELECT id, text, author FROM quotes ORDER BY RANDOM() LIMIT 1;`
+		rows, err := qr.db.Query(cmd)
+		checkerr(err)
+		defer rows.Close()
+		// iterate through rows cursor and append to buffer
+		for rows.Next() {
+			var id uint
+			var author string
+			var text string
+			rows.Scan(&id, &text, &author)
+			qtObj.Id, qtObj.Author, qtObj.Quote = id, author, text
+			break
+		}
+	}
+	return 0
 }
 
 /*

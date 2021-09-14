@@ -12,12 +12,16 @@ function openModal(modal){
 function setSaveBtnState(){
     const saveBtn = document.getElementById('btn-edit-save');
     if (saveBtn != null){
+        saveBtn.style.display = 'initial';
         switch(STATE.getState()){
             case ST_VAL_ADD: 
                 saveBtn.innerText = "Add \u2713";
                 break;
             case ST_VAL_UPD:
                 saveBtn.innerText = "Update \u2713";
+                break;
+            case ST_VAL_READ:
+                saveBtn.style.display = 'none';
                 break;
         }
     }
@@ -59,11 +63,12 @@ function loadRecord(recId, rowIndex, author, quote){
     
 }
 
-function initUI(saveAction){
+function initUI(saveAction, randomQuote){
     // get the dom elements
     const btnAddNew = document.getElementById('btn-add-quote');
     const btnEditCancel = document.getElementById('btn-edit-cancel');
     const btnEditSave = document.getElementById('btn-edit-save');
+    const btnInspireMe = document.getElementById('btn-inspire');
     const divModal = document.getElementById('edit-modal');
 
     // wire up the event handlers
@@ -80,6 +85,14 @@ function initUI(saveAction){
     if (saveAction !== null){
         btnEditSave.addEventListener('click', () => {
            saveAction();
+       });
+    }
+    if (randomQuote !== null){
+        btnInspireMe.addEventListener('click', () => {
+            STATE.setState(ST_VAL_READ);
+            randomQuote();
+            setSaveBtnState();
+            openModal(divModal);
        });
     }
 };

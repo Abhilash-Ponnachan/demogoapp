@@ -176,3 +176,16 @@ func (rh reqHandler) updatequote(w http.ResponseWriter, r *http.Request) {
 	// if success, return rows updated
 
 }
+
+func (rh reqHandler) randomquote(w http.ResponseWriter, r *http.Request) {
+	qt := quote{}
+	// get random from repository
+	rh.repo.randomQuote(&qt)
+	js, err := json.Marshal(qt)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}

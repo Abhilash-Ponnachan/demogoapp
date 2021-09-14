@@ -67,6 +67,8 @@ func main() {
 	muxHandler.HandleFunc("/api/deletequote", rh.deletequote)
 	// POST api for updating a quote
 	muxHandler.HandleFunc("/api/updatequote", rh.updatequote)
+	// GET api for finding random quote
+	muxHandler.HandleFunc("/api/randomquote", rh.randomquote)
 
 	// http server instance
 	server := http.Server{
