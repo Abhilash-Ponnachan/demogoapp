@@ -1,0 +1,14 @@
+FROM golang:1.14 AS build
+WORKDIR /demowebapp
+COPY go.mod go.sum *.json *.go ./
+RUN CGO_ENABLED=1 go build -o ./webapp
+
+FROM ubuntu:latest
+WORKDIR /demowebapp
+COPY assets/ ./assets/
+COPY db/ ./db/
+COPY *.json ./
+COPY --from=build /demowebapp/webapp ./
+EXPOSE 8080
+#CMD tail -f /dev/null
+CMD ["./webapp"]

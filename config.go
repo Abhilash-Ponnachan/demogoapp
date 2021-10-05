@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"sync"
 )
 
 const configFile = "./config.json"
+const portEnvKey = "PORT"
 
 type configData struct {
 	Port         string
@@ -38,5 +40,8 @@ func (cf *configData) load() {
 	// assign to 'cf' fields
 	//log.Printf("cf = %v\n", cf)
 	checkerr(err)
-	// for 'Port' override with os.env value!!
+	port := os.Getenv(portEnvKey)
+	if port != "" {
+		cf.Port = port
+	}
 }

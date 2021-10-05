@@ -100,7 +100,7 @@
     border: 1px solid grey;
     padding: 5px;
     background-color:whitesmoke;
-    font-size: medium;
+    font-size: 1vw;
     font-style: italic;
     color: rgb(82, 4, 4);
     font-family:  Baskerville,'Hoefler Text',Garamond,'Times New Roman',serif;
@@ -162,7 +162,7 @@
   }
   .col_1 {
     width: 70%;
-    font-size: medium;
+    font-size: 1vw;
     font-style: italic;
     text-align: center;
     color: rgb(82, 4, 4);
